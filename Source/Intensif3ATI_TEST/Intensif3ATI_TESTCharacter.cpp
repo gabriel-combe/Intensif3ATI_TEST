@@ -35,7 +35,7 @@ AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BlobMesh"));
 	MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetRelativeLocation(FVector(0, 0, -80));
+	MeshComp->SetRelativeLocation(FVector(0, 0, -55));
 
 	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -49,6 +49,12 @@ AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Resize the blob
+	SetActorScale3D(BlobScale);
+
+	// Add Tag
+	Tags.Add(FName("Player"));
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;

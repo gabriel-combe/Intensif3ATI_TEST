@@ -88,6 +88,8 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationTriggered()
 	if (bHitSuccessful)
 	{
 		CachedDestination = Hit.Location;
+
+		CachedActor = Hit.GetActor();
 	}
 	
 	// Move towards mouse pointer or touch
@@ -104,6 +106,19 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationReleased()
 	// If it was a short press
 	if (FollowTime <= ShortPressThreshold)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Object hit: %s"), *CachedActor->GetName());
+
+		if (CachedActor->ActorHasTag(FName("Player")) && CachedActor->GetName() != GetName()) {
+			APawn* CreaturePawn = Cast<APawn>(CachedActor);
+
+			if (FVector::Distance(GetPawn()->GetActorLocation(), CreaturePawn->GetActorLocation()) <= PossessionDistanceThreshold) {
+				UnPossess();
+				//SetViewTargetWithBlend(CreaturePawn, 1.0f);
+				Possess(CreaturePawn);
+				return;
+			}
+		}
+
 		// We move there and spawn some particles
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);

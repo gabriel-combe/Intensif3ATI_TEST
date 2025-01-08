@@ -26,6 +26,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float ShortPressThreshold;
 
+	/** */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession")
+	float PossessionDistanceThreshold = 250.0f;
+
 	/** FX Class that we will spawn when clicking */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UNiagaraSystem* FXCursor;
@@ -47,7 +51,7 @@ protected:
 	uint32 bMoveToMouseCursor : 1;
 
 	virtual void SetupInputComponent() override;
-	
+
 	// To add mapping context
 	virtual void BeginPlay();
 
@@ -60,6 +64,8 @@ protected:
 
 private:
 	FVector CachedDestination;
+
+	TObjectPtr<AActor> CachedActor;
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed

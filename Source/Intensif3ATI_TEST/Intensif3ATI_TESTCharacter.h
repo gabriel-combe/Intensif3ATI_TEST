@@ -24,6 +24,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* MeshComp;
 
+	/** Blob Scale */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	FVector BlobScale = FVector(0.5f, 0.5f, 0.5f);
+
 public:
 	AIntensif3ATI_TESTCharacter();
 
