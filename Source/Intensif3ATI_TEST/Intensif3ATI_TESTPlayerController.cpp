@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Intensif3ATI_TESTPlayerController.h"
-#include "Intensif3ATI_TESTCharacter.h"
 #include "GameFramework/Pawn.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "NiagaraSystem.h"
@@ -12,6 +11,8 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+
+#include "BFL_Utility.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -27,6 +28,8 @@ void AIntensif3ATI_TESTPlayerController::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	AIntensif3ATI_TESTCharacter* ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(GetCharacter());
 }
 
 void AIntensif3ATI_TESTPlayerController::SetupInputComponent()
@@ -88,16 +91,14 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationTriggered()
 	if (bHitSuccessful)
 	{
 		CachedDestination = Hit.Location;
-
-		CachedActor = Hit.GetActor();
 	}
 	
 	// Move towards mouse pointer or touch
-	AIntensif3ATI_TESTCharacter* ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(GetCharacter());
 	if (ControlledCharacter != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledCharacter->GetActorLocation()).GetSafeNormal();
 		ControlledCharacter->AddMovementInput(WorldDirection, 1.0, false);
+		ControlledCharacter->GetCharacterMovement()->SetGravityDirection();
 	}
 }
 
@@ -106,19 +107,6 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationReleased()
 	// If it was a short press
 	if (FollowTime <= ShortPressThreshold)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Object hit: %s"), *CachedActor->GetName());
-
-		if (CachedActor->ActorHasTag(FName("Player")) && CachedActor->GetName() != GetName()) {
-			APawn* CreaturePawn = Cast<APawn>(CachedActor);
-
-			if (FVector::Distance(GetPawn()->GetActorLocation(), CreaturePawn->GetActorLocation()) <= PossessionDistanceThreshold) {
-				UnPossess();
-				//SetViewTargetWithBlend(CreaturePawn, 1.0f);
-				Possess(CreaturePawn);
-				return;
-			}
-		}
-
 		// We move there and spawn some particles
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
@@ -138,4 +126,16 @@ void AIntensif3ATI_TESTPlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+void AIntensif3ATI_TESTPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	TArray<FScanResult> points = UBFL_Utility::Scan(GetWorld(), ControlledCharacter->GetActorLocation(), ControlledCharacter->GetActorQuat(), 5, 25, 3, 2, 54, 145, 4, true);
+
+	for each (object var in collection_to_loop)
+	{
+
+	}
 }

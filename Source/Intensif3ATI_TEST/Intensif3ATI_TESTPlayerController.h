@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Intensif3ATI_TESTCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "Intensif3ATI_TESTPlayerController.generated.h"
 
@@ -55,6 +57,9 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	// Called every frame.
+	virtual void Tick(float DeltaSeconds) override;
+
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
@@ -65,7 +70,7 @@ protected:
 private:
 	FVector CachedDestination;
 
-	TObjectPtr<AActor> CachedActor;
+	AIntensif3ATI_TESTCharacter* ControlledCharacter;
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
