@@ -19,9 +19,13 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 AIntensif3ATI_TESTPlayerController::AIntensif3ATI_TESTPlayerController()
 {
 	bShowMouseCursor = true;
+	bReachedLocation = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+	StuckCounter = 0.f;
+	AcceptanceRadius = 50.0f;
+	ThresholdStuck = .5f;
 }
 
 void AIntensif3ATI_TESTPlayerController::BeginPlay()
@@ -29,7 +33,7 @@ void AIntensif3ATI_TESTPlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	AIntensif3ATI_TESTCharacter* ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(GetCharacter());
+	ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(GetCharacter());
 }
 
 void AIntensif3ATI_TESTPlayerController::SetupInputComponent()
@@ -97,8 +101,8 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationTriggered()
 	if (ControlledCharacter != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledCharacter->GetActorLocation()).GetSafeNormal();
+		PrevDist = FVector::Dist(CachedDestination, ControlledCharacter->GetActorLocation());
 		ControlledCharacter->AddMovementInput(WorldDirection, 1.0, false);
-		ControlledCharacter->GetCharacterMovement()->SetGravityDirection();
 	}
 }
 
@@ -108,7 +112,8 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationReleased()
 	if (FollowTime <= ShortPressThreshold)
 	{
 		// We move there and spawn some particles
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+		bReachedLocation = false;
+		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}
 
@@ -132,10 +137,46 @@ void AIntensif3ATI_TESTPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	TArray<FScanResult> points = UBFL_Utility::Scan(GetWorld(), ControlledCharacter->GetActorLocation(), ControlledCharacter->GetActorQuat(), 5, 25, 3, 2, 54, 145, 4, true);
+	if (!bReachedLocation) {
+		FVector WorldDirection = (CachedDestination - ControlledCharacter->GetActorLocation()).GetSafeNormal();
+		ControlledCharacter->AddMovementInput(WorldDirection, 1.0, false);
 
-	for each (object var in collection_to_loop)
-	{
+		float dist = FVector::Dist(CachedDestination, ControlledCharacter->GetActorLocation());
+		UE_LOG(LogTemp, Warning, TEXT("Difference Dist: %f"), FMath::Abs(PrevDist - dist));
 
+		if (FMath::Abs(PrevDist - dist) <= 1.f) {
+			StuckCounter = GetWorld()->GetDeltaSeconds();
+			PrevDist = dist;
+		}
+
+		if (dist <= AcceptanceRadius)
+			bReachedLocation = true;
+
+		if (StuckCounter >= ThresholdStuck) {
+			bReachedLocation = true;
+			StuckCounter = 0.f;
+		}
 	}
+
+	if (bWalkOnWalls) {
+		TArray<FScanResult> points = UBFL_Utility::Scan(GetWorld(), ControlledCharacter->GetMesh()->GetComponentLocation(), ControlledCharacter->GetActorQuat(), 5, 20, 3, 2, 54, 145, 4, true);
+
+		if (points.Num() == 0) return;
+
+		FVector normalAvg = FVector::ZeroVector;
+
+		for (const FScanResult& point : points) {
+
+			if (point.Normal.IsNearlyZero()) continue;
+
+			normalAvg += point.Normal * point.Weight;
+		}
+
+		normalAvg /= points.Num();
+
+
+		ControlledCharacter->GetCharacterMovement()->SetGravityDirection(-normalAvg);
+	}
+
+	
 }

@@ -11,21 +11,21 @@ struct FScanResult {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scan")
-	FVector normal;
+	FVector Normal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scan")
-	float weight;
+	float Weight;
 
 	FScanResult()
 	{
-		normal = FVector::ZeroVector;
-		weight = 0;
+		Normal = FVector::ZeroVector;
+		Weight = 0;
 	}
 
 	FScanResult(FVector normal, float weight)
 	{
-		normal = normal;
-		weight = weight;
+		Normal = normal;
+		Weight = weight;
 	}
 };
 

@@ -73,9 +73,9 @@ void UBFL_Utility::Arm(UObject* WorldContextObject, FVector position, FQuat rota
 		DrawDebugLine(WorldContextObject->GetWorld(), position, outHit.ImpactPoint, FColor(255, 255, 255, 255 * weight));
 
 	position = outHit.ImpactPoint;
-	rotation = FQuat::FindBetweenVectors(rotation * FVector::UpVector, outHit.ImpactNormal) * rotation;
+	rotation = FQuat::FindBetweenVectors(rotation * FVector::UpVector, outHit.Normal) * rotation;
 
-	points.Add(FScanResult(outHit.ImpactNormal, weight));
+	points.Add(FScanResult(outHit.Normal, weight));
 
 	if (gizmo)
 		DrawDebugSphere(WorldContextObject->GetWorld(), position, 1.f, 8, FColor(255, 255, 255, 255 * weight));

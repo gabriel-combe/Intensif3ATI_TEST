@@ -14,7 +14,7 @@
 AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 {
 	// Set size for player capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 42.0f);
+	GetCapsuleComponent()->InitCapsuleSize(20.f, 20.0f);
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
@@ -31,12 +31,6 @@ AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	// Create a Mesh Component
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BlobMesh"));
-	MeshComp->SetupAttachment(RootComponent);
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetRelativeLocation(FVector(0, 0, -55));
-
 	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -49,9 +43,6 @@ AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	// Resize the blob
-	SetActorScale3D(BlobScale);
 
 	// Add Tag
 	Tags.Add(FName("Player"));

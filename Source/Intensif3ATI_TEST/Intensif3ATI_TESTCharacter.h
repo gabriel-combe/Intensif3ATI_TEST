@@ -20,14 +20,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	/** Mesh Blob */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-	class UStaticMeshComponent* MeshComp;
-
-	/** Blob Scale */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
-	FVector BlobScale = FVector(0.5f, 0.5f, 0.5f);
-
 public:
 	AIntensif3ATI_TESTCharacter();
 
@@ -38,7 +30,5 @@ public:
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns MeshComp subobject **/
-	FORCEINLINE class UStaticMeshComponent* GetMeshComp() const { return MeshComp; }
 };
 

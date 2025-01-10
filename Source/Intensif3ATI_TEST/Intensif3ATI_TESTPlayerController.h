@@ -13,6 +13,7 @@
 class UNiagaraSystem;
 class UInputMappingContext;
 class UInputAction;
+class UCharacterMovementComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -28,9 +29,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float ShortPressThreshold;
 
-	/** */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Possession")
-	float PossessionDistanceThreshold = 250.0f;
+	/** Can the character walk on the walls*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability")
+	bool bWalkOnWalls = true;
+
+	/** Acceptance radius to reach a location */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float AcceptanceRadius;
+
+	/** Threshold in second where we consider being stuck */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float ThresholdStuck;
 
 	/** FX Class that we will spawn when clicking */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -71,6 +80,10 @@ private:
 	FVector CachedDestination;
 
 	AIntensif3ATI_TESTCharacter* ControlledCharacter;
+
+	bool bReachedLocation;
+	float PrevDist;
+	float StuckCounter;
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
