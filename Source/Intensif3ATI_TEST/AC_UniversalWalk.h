@@ -3,26 +3,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Intensif3ATI_TESTCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ActorComponent.h"
 #include "AC_UniversalWalk.generated.h"
 
+class UCharacterMovementComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class INTENSIF3ATI_TEST_API UAC_UniversalWalk : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	UAC_UniversalWalk();
+private:
+	TObjectPtr<AIntensif3ATI_TESTCharacter> ControlledCharacter;
+
+	bool bWalkOnWalls = false;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
+	// Sets default values for this component's properties
+	UAC_UniversalWalk();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	void ActivateUniversalWalk();
+
+	void DeactivateUniversalWalk();
 };

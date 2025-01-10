@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AC_UniversalWalk.h"
 #include "Intensif3ATI_TESTCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "Intensif3ATI_TESTPlayerController.generated.h"
@@ -57,6 +58,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationTouchAction;
 
+	/** Activate the UniversalWalkComp */
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	void ActivateUniversalWalkComp();
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -84,6 +89,8 @@ private:
 	bool bReachedLocation;
 	float PrevDist;
 	float StuckCounter;
+
+	TObjectPtr<UAC_UniversalWalk> UniversalWalkComp;
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed

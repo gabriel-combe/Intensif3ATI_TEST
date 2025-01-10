@@ -12,8 +12,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 
-#include "BFL_Utility.h"
-
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AIntensif3ATI_TESTPlayerController::AIntensif3ATI_TESTPlayerController()
@@ -26,6 +24,8 @@ AIntensif3ATI_TESTPlayerController::AIntensif3ATI_TESTPlayerController()
 	StuckCounter = 0.f;
 	AcceptanceRadius = 50.0f;
 	ThresholdStuck = .5f;
+
+	UniversalWalkComp = CreateDefaultSubobject<UAC_UniversalWalk>(FName("Universal Walk"));
 }
 
 void AIntensif3ATI_TESTPlayerController::BeginPlay()
@@ -34,6 +34,10 @@ void AIntensif3ATI_TESTPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(GetCharacter());
+
+	FTimerHandle TimerHandleTest;
+	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &AIntensif3ATI_TESTPlayerController::ActivateUniversalWalkComp);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandleTest, Delegate, 10.0f, false);
 }
 
 void AIntensif3ATI_TESTPlayerController::SetupInputComponent()
@@ -156,27 +160,11 @@ void AIntensif3ATI_TESTPlayerController::Tick(float DeltaSeconds)
 			bReachedLocation = true;
 			StuckCounter = 0.f;
 		}
-	}
+	}	
+}
 
-	if (bWalkOnWalls) {
-		TArray<FScanResult> points = UBFL_Utility::Scan(GetWorld(), ControlledCharacter->GetMesh()->GetComponentLocation(), ControlledCharacter->GetActorQuat(), 5, 20, 3, 2, 54, 145, 4, true);
-
-		if (points.Num() == 0) return;
-
-		FVector normalAvg = FVector::ZeroVector;
-
-		for (const FScanResult& point : points) {
-
-			if (point.Normal.IsNearlyZero()) continue;
-
-			normalAvg += point.Normal * point.Weight;
-		}
-
-		normalAvg /= points.Num();
-
-
-		ControlledCharacter->GetCharacterMovement()->SetGravityDirection(-normalAvg);
-	}
-
-	
+void AIntensif3ATI_TESTPlayerController::ActivateUniversalWalkComp()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ACTIVATE"));
+	UniversalWalkComp->ActivateUniversalWalk();
 }
