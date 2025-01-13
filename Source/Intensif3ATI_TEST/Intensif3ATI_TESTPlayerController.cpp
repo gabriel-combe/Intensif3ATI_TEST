@@ -24,8 +24,6 @@ AIntensif3ATI_TESTPlayerController::AIntensif3ATI_TESTPlayerController()
 	StuckCounter = 0.f;
 	AcceptanceRadius = 50.0f;
 	ThresholdStuck = .5f;
-
-	UniversalWalkComp = CreateDefaultSubobject<UAC_UniversalWalk>(FName("Universal Walk"));
 }
 
 void AIntensif3ATI_TESTPlayerController::BeginPlay()
@@ -34,10 +32,6 @@ void AIntensif3ATI_TESTPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(GetCharacter());
-
-	FTimerHandle TimerHandleTest;
-	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &AIntensif3ATI_TESTPlayerController::ActivateUniversalWalkComp);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandleTest, Delegate, 10.0f, false);
 }
 
 void AIntensif3ATI_TESTPlayerController::SetupInputComponent()
@@ -161,10 +155,4 @@ void AIntensif3ATI_TESTPlayerController::Tick(float DeltaSeconds)
 			StuckCounter = 0.f;
 		}
 	}	
-}
-
-void AIntensif3ATI_TESTPlayerController::ActivateUniversalWalkComp()
-{
-	UE_LOG(LogTemp, Warning, TEXT("ACTIVATE"));
-	UniversalWalkComp->ActivateUniversalWalk();
 }

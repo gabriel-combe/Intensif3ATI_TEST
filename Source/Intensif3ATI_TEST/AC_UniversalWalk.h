@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Intensif3ATI_TESTCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
 #include "Components/ActorComponent.h"
 #include "AC_UniversalWalk.generated.h"
 
@@ -16,9 +16,9 @@ class INTENSIF3ATI_TEST_API UAC_UniversalWalk : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	TObjectPtr<AIntensif3ATI_TESTCharacter> ControlledCharacter;
+	TObjectPtr<ACharacter> ControlledCharacter;
 
-	bool bWalkOnWalls = false;
+	bool bWalkOnWalls = true;
 
 protected:
 	// Called when the game starts

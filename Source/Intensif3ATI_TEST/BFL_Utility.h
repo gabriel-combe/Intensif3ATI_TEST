@@ -4,7 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Engine/DataTable.h"
 #include "BFL_Utility.generated.h"
+
+UENUM(BlueprintType)
+enum class EInsectType : uint8 {
+	Blob	UMETA(DisplayName = "Blob"),
+	Spider	UMETA(DisplayName = "Spider"),
+	Worm	UMETA(DisplayName = "Worm"),
+};
 
 USTRUCT(BlueprintType)
 struct FScanResult {
@@ -27,6 +35,31 @@ struct FScanResult {
 		Normal = normal;
 		Weight = weight;
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FInsectData : public FTableRowBase {
+	GENERATED_BODY()
+
+	// Type of Insect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
+	EInsectType Type;
+
+	// Ability Component associated to the Insect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
+	TSubclassOf<UActorComponent> AbilityComponent;
+
+	// Skeletal Mesh of the Insect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
+	TObjectPtr<USkeletalMesh> SkeletalMesh;
+
+	// Mesh of the Insect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
+	TObjectPtr<UStaticMesh> Mesh;
+
+	// Material of the Insect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
+	TObjectPtr<UMaterial> Material;
 };
 
 /**

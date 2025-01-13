@@ -21,15 +21,16 @@ AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	// Reset SkeletalMesh
-	GetMesh()->Activate(true);
-	GetMesh()->SetHiddenInGame(true);
-
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
+	// Create a mesh component
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BlobMesh"));
+	MeshComp->SetupAttachment(RootComponent);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -47,12 +48,34 @@ AIntensif3ATI_TESTCharacter::AIntensif3ATI_TESTCharacter()
 	// Add Tag
 	Tags.Add(FName("Player"));
 
+	AbilityComponent = CreateDefaultSubobject<UActorComponent>(FName("Ability Component"));
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void AIntensif3ATI_TESTCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AIntensif3ATI_TESTCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+}
+
+void AIntensif3ATI_TESTCharacter::AbilityChange(EInsectType type)
+{
+	FString name;
+	UEnum::GetValueAsName(type).ToString().Split(TEXT("::"), nullptr, &name);
+
+	FInsectData* row = InsectDataTable->FindRow<FInsectData>(FName(name), "InsectData");
+
+	if (AbilityComponent)
+		AbilityComponent->DestroyComponent();
+
+	if (!row) return;
+
+	AbilityComponent = AActor::AddComponentByClass(row->AbilityComponent, false, FTransform::Identity, false);
 }

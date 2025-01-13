@@ -20,10 +20,7 @@ void UAC_UniversalWalk::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AController* controller = Cast<AController>(GetOwner());
-
-	if (controller)
-		ControlledCharacter = Cast<AIntensif3ATI_TESTCharacter>(controller->GetCharacter());	
+	ControlledCharacter = Cast<ACharacter>(GetOwner());	
 }
 
 
