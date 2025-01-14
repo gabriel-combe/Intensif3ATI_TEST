@@ -3,7 +3,7 @@
 
 #include "BFL_Utility.h"
 
-bool UBFL_Utility::ArcCast(UObject* WorldContextObject, FVector center, FQuat rotation, float angle, float radius, int resolution, FHitResult& outHit, bool gizmo)
+bool UBFL_Utility::ArcCast(UObject* WorldContextObject, FVector center, FQuat rotation, float angle, float radius, int resolution, FHitResult& outHit, AActor* IgnoreActor, bool gizmo)
 {
 	rotation *= FQuat::MakeFromEuler(FVector(0, angle / 2.f, 0));
 
@@ -13,7 +13,6 @@ bool UBFL_Utility::ArcCast(UObject* WorldContextObject, FVector center, FQuat ro
 	FVector A, B;
 	FCollisionQueryParams CollisionParameters;
 
-	const AActor* IgnoreActor = Cast<AActor>(WorldContextObject);
 	if (IgnoreActor) CollisionParameters.AddIgnoredActor(IgnoreActor);
 
 	for (int i = 0; i < resolution; i++) {
@@ -36,7 +35,7 @@ bool UBFL_Utility::ArcCast(UObject* WorldContextObject, FVector center, FQuat ro
 	return false;
 }
 
-TArray<FScanResult> UBFL_Utility::Scan(UObject* WorldContextObject, FVector position, FQuat rotation, int armCount, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, bool gizmo)
+TArray<FScanResult> UBFL_Utility::Scan(UObject* WorldContextObject, FVector position, FQuat rotation, int armCount, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, AActor* IgnoreActor, bool gizmo)
 {
 	TArray<FScanResult> points;
 
@@ -55,17 +54,18 @@ TArray<FScanResult> UBFL_Utility::Scan(UObject* WorldContextObject, FVector posi
 			armDuplicateAngle,
 			arcAngle,
 			arcResolution,
+			IgnoreActor,
 			gizmo);
 	}
 
 	return points;
 }
 
-void UBFL_Utility::Arm(UObject* WorldContextObject, FVector position, FQuat rotation, int duplicateCount, TArray<FScanResult>& points, float angle, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, bool gizmo)
+void UBFL_Utility::Arm(UObject* WorldContextObject, FVector position, FQuat rotation, int duplicateCount, TArray<FScanResult>& points, float angle, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, AActor* IgnoreActor, bool gizmo)
 {
 	FHitResult outHit;
 
-	if (!ArcCast(WorldContextObject, position, rotation, arcAngle, armLength, arcResolution, outHit, gizmo)) return;
+	if (!ArcCast(WorldContextObject, position, rotation, arcAngle, armLength, arcResolution, outHit, IgnoreActor, gizmo)) return;
 
 	float weight = 1 - (float)(duplicateCount - 1) / armDuplicateCount;
 
@@ -97,6 +97,7 @@ void UBFL_Utility::Arm(UObject* WorldContextObject, FVector position, FQuat rota
 			armDuplicateAngle,
 			arcAngle,
 			arcResolution,
+			IgnoreActor,
 			gizmo);
 	}
 }

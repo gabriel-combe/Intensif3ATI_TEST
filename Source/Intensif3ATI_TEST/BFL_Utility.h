@@ -53,6 +53,10 @@ struct FInsectData : public FTableRowBase {
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
 
+	// Anim Class for the skeletal mesh of the insect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
+	TObjectPtr<UAnimBlueprint> AnimClass;
+
 	// Mesh of the Insect
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Insect")
 	TObjectPtr<UStaticMesh> Mesh;
@@ -72,11 +76,11 @@ class INTENSIF3ATI_TEST_API UBFL_Utility : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "RayCast", meta = (WorldContext = "WorldContextObject"))
-	static bool ArcCast(UObject* WorldContextObject, FVector center, FQuat rotation, float angle, float radius, int resolution, FHitResult& outHit, bool gizmo);
+	static bool ArcCast(UObject* WorldContextObject, FVector center, FQuat rotation, float angle, float radius, int resolution, FHitResult& outHit, AActor* IgnoreActor, bool gizmo);
 
 	UFUNCTION(BlueprintCallable, Category = "Scan", meta = (WorldContext = "WorldContextObject"))
-	static TArray<FScanResult> Scan(UObject* WorldContextObject, FVector position, FQuat rotation, int armCount, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, bool gizmo);
+	static TArray<FScanResult> Scan(UObject* WorldContextObject, FVector position, FQuat rotation, int armCount, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, AActor* IgnoreActor, bool gizmo);
 	
 	UFUNCTION(BlueprintCallable, Category = "Scan", meta = (WorldContext = "WorldContextObject"))
-	static void Arm(UObject* WorldContextObject, FVector position, FQuat rotation, int duplicateCount, TArray<FScanResult>& points, float angle, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, bool gizmo);
+	static void Arm(UObject* WorldContextObject, FVector position, FQuat rotation, int duplicateCount, TArray<FScanResult>& points, float angle, float armLength, int armDuplicateCount, int armDuplicate, int armDuplicateAngle, float arcAngle, int arcResolution, AActor* IgnoreActor, bool gizmo);
 };

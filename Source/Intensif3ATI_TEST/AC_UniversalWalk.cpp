@@ -29,9 +29,7 @@ void UAC_UniversalWalk::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!bWalkOnWalls) return;
-
-	TArray<FScanResult> points = UBFL_Utility::Scan(GetWorld(), ControlledCharacter->GetMesh()->GetComponentLocation(), ControlledCharacter->GetActorQuat(), 5, 20, 3, 2, 54, 145, 4, true);
+	TArray<FScanResult> points = UBFL_Utility::Scan(GetWorld(), ControlledCharacter->GetMesh()->GetComponentLocation(), ControlledCharacter->GetActorQuat(), 5, 20, 3, 2, 54, 145, 4, ControlledCharacter, true);
 
 	if (points.Num() == 0) return;
 
@@ -47,14 +45,4 @@ void UAC_UniversalWalk::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	normalAvg /= points.Num();
 
 	ControlledCharacter->GetCharacterMovement()->SetGravityDirection(-normalAvg);
-}
-
-void UAC_UniversalWalk::ActivateUniversalWalk()
-{
-	bWalkOnWalls = true;
-}
-
-void UAC_UniversalWalk::DeactivateUniversalWalk()
-{
-	bWalkOnWalls = false;
 }

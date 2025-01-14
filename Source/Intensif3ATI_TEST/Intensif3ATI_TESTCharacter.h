@@ -14,7 +14,7 @@ class AIntensif3ATI_TESTCharacter : public ACharacter
 
 private:
 	/** Mesh Component */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blob|Mesh", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Blob|Mesh", meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* MeshComp;
 
 	/** Top down camera */
@@ -50,13 +50,13 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
-	/** Event to implement for the disolve effect **/
-	UFUNCTION(BlueprintImplementableEvent, Category = "Blob|Material")
-	void CorruptInsect();
+	/** Event to implement for the dissolve effect **/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Blob|Corruption")
+	void DissolveBlob();
 
-	/** Event to implement for the undisolve effect **/
-	UFUNCTION(BlueprintImplementableEvent, Category = "Blob|Material")
-	void UnCorruptInsect();
+	/** Event to implement for the undissolve effect **/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Blob|Corruption")
+	void UnDissolveBlob();
 
 	/** Change the current ability **/
 	UFUNCTION(BlueprintCallable, Category = "Blob|Ability")

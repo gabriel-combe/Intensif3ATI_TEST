@@ -11,6 +11,8 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+#include "Intensif3ATI_TESTInsect.h"
+#include "Insect_DetourCrowdAIController.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -24,6 +26,7 @@ AIntensif3ATI_TESTPlayerController::AIntensif3ATI_TESTPlayerController()
 	StuckCounter = 0.f;
 	AcceptanceRadius = 50.0f;
 	ThresholdStuck = .5f;
+	IsPossessing = false;
 }
 
 void AIntensif3ATI_TESTPlayerController::BeginPlay()
@@ -93,6 +96,7 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationTriggered()
 	if (bHitSuccessful)
 	{
 		CachedDestination = Hit.Location;
+		HitActor = Hit.GetActor();
 	}
 	
 	// Move towards mouse pointer or touch
@@ -109,8 +113,31 @@ void AIntensif3ATI_TESTPlayerController::OnSetDestinationReleased()
 	// If it was a short press
 	if (FollowTime <= ShortPressThreshold)
 	{
-		// We move there and spawn some particles
+		// We move there
 		bReachedLocation = false;
+
+		if (!IsPossessing && HitActor) {
+			
+			AIntensif3ATI_TESTInsect* HitInsectCharacter = Cast<AIntensif3ATI_TESTInsect>(HitActor);
+			UE_LOG(LogTemp, Warning, TEXT("Character: %s"), *HitInsectCharacter->GetName());
+			
+			if (HitInsectCharacter) {
+				AInsect_DetourCrowdAIController* HitInsect = Cast<AInsect_DetourCrowdAIController>(HitInsectCharacter->GetController());
+				UE_LOG(LogTemp, Warning, TEXT("Controller: %s"), *HitInsect->GetName());
+
+				if (HitInsect) {
+					AddInsectToCrowd(HitInsect);
+
+					ControlledCharacter->DissolveBlob();
+					ControlledCharacter->AbilityChange(HitInsect->GetInsectType());
+					IsPossessing = true;
+
+					bReachedLocation = true;
+				}
+			}
+		}
+
+		// We spawn some particles
 		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}
@@ -144,8 +171,9 @@ void AIntensif3ATI_TESTPlayerController::Tick(float DeltaSeconds)
 
 		if (FMath::Abs(PrevDist - dist) <= 1.f) {
 			StuckCounter = GetWorld()->GetDeltaSeconds();
-			PrevDist = dist;
 		}
+
+		PrevDist = dist;
 
 		if (dist <= AcceptanceRadius)
 			bReachedLocation = true;
@@ -155,4 +183,33 @@ void AIntensif3ATI_TESTPlayerController::Tick(float DeltaSeconds)
 			StuckCounter = 0.f;
 		}
 	}	
+}
+
+/** Add an insect to the crowd **/
+bool AIntensif3ATI_TESTPlayerController::AddInsectToCrowd(AInsect_DetourCrowdAIController* insect)
+{
+	if (!insect) return false;
+
+	insect->SetCorruption(true);
+
+	int32 idx = InsectCrowd.Emplace(insect);
+
+	if (idx < 0) return false;
+
+	return true;
+}
+
+/** Remove all insect from the crowd **/
+void AIntensif3ATI_TESTPlayerController::RemoveAllInsectFromCrowd()
+{
+	if (InsectCrowd.IsEmpty()) return;
+
+	for (AInsect_DetourCrowdAIController* insect : InsectCrowd) {
+		insect->SetCorruption(false);
+	}
+
+	InsectCrowd.Empty();
+	ControlledCharacter->UnDissolveBlob();
+	IsPossessing = false;
+	ControlledCharacter->AbilityChange(EInsectType::Blob);
 }

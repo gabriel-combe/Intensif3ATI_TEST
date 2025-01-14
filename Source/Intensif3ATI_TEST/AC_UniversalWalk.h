@@ -18,7 +18,6 @@ class INTENSIF3ATI_TEST_API UAC_UniversalWalk : public UActorComponent
 private:
 	TObjectPtr<ACharacter> ControlledCharacter;
 
-	bool bWalkOnWalls = true;
 
 protected:
 	// Called when the game starts
@@ -30,8 +29,4 @@ public:
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void ActivateUniversalWalk();
-
-	void DeactivateUniversalWalk();
 };
